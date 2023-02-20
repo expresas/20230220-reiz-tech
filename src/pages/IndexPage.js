@@ -17,7 +17,9 @@ const IndexPage = () => {
   }, [])
     
   return (
-    <div>
+    <div className='container'>
+      <h1>List of countries</h1>
+      <div>Sort list: <button>Asc</button> / <button>Desc</button></div>
       {getAllData.map(x => <SingleCountry country={x} key={x.name}/>)}
     </div>
   )

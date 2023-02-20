@@ -3,9 +3,9 @@ import React from 'react'
 const SingleCountry = ({country}) => {
   return (
     <div className='singleCountry'>
-      <div>{country.name}</div>
-      <div>{country.region}</div>
-      <div>{country.area}</div>
+      <div className='bold'>{country.name}</div>
+      <div>Region: {country.region}</div>
+      <div>Area: {country.area} sq km</div>
     </div>
   )
 }
