@@ -25,10 +25,19 @@ code {
   background-color: rgb(143,255,143);
 }
 
+.d-flex {
+  display: flex;
+}
+
+.space-btw {
+  justify-content: space-between;
+}
+
+.j-center {
+  justify-content: center;
+}
+
 .singleCountry {
-  /* display: flex; */
-  /* flex-wrap: wrap; */
-  /* justify-content: space-between; */
   background-color: rgb(204,255,204);
   padding-left: 0.5rem;
   padding-right: 0.5rem;

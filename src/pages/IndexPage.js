@@ -1,62 +1,73 @@
 import { useEffect, useState } from 'react'
+import Pagination from '../components/Pagination'
 import SingleCountry from '../components/SingleCountry'
 
 const IndexPage = () => {
 
-  // const [getAllData, setAllData] = useState([])
+  const [getAllData, setAllData] = useState([])
   const [getShowData, setShowData] = useState([])
-  const [getSorting, setSorting] = useState(true)
-  const [selectedFilter, setSelectedFilter] = useState()
+  const [getSorting, setSorting] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const postsPerPage = 20
   
   useEffect(() => {
     fetch("https://restcountries.com/v2/all?fields=name,region,area")
       .then(res => res.json())
       .then(data => {
-        // setAllData(data)
+        setAllData(data)
         setShowData(data)
-        // console.log('test')
-        console.log(data)
       })
-    
   }, [])
 
   function sortingAsc() {
-    // console.log('sort Asc')
-    let tempArr = getShowData
-    tempArr.sort((a,b)=> a.name.localeCompare(b.name))
+    const tempArr = getShowData.sort((a,b)=> a.name.localeCompare(b.name))
     setShowData([...tempArr])
-    setSorting(true)
+    setSorting(1)
+    setCurrentPage(1)
   }
   
   function sortingDesc() {
-    // console.log('sort Desc')
-    let tempArr = getShowData
-    tempArr.sort((a,b)=> b.name.localeCompare(a.name))
+    const tempArr = getShowData.sort((a,b)=> b.name.localeCompare(a.name))
     setShowData([...tempArr])
-    setSorting(false)
+    setSorting(2)
+    setCurrentPage(1)
   }
 
   function handleSelectedFilter(event) {
-    setSelectedFilter(event.target.value)
-    // console.log('eventas:', event.target.value)
+    if (event.target.value === 'Oceania') {
+      const tempArr = getAllData.filter((item) => item.region === event.target.value)
+      setShowData([...tempArr])
+    }
+    if (event.target.value === 'Lithuania') {
+      const tempArr = getAllData.filter((item) => item.area < 65300)
+      setShowData([...tempArr])
+    }
+    if (!event.target.value) {
+      setShowData(getAllData)
+    }
+    setSorting(false)
+    setCurrentPage(1)
   }
+
+  const lastPostIndex = currentPage * postsPerPage
+  const firstPostIndex = lastPostIndex - postsPerPage
+  const currentPosts = getShowData.slice(firstPostIndex, lastPostIndex)
 
   return (
     <div className='container'>
       <h1>List of countries</h1>
-      <div>Sort list: <button onClick={sortingAsc} style={{backgroundColor: getSorting ? "green" : ""}}>Asc</button> / <button onClick={sortingDesc} style={{backgroundColor: getSorting ? "" : "green"}}>Desc</button></div>
-      <div>Filter countries: 
-        <div>
-          <select name="filter-list" id="filter-list" onChange={handleSelectedFilter}>
+      <div className='d-flex space-btw'>
+        <div>Filter countries: 
+          <select name="filter-list" id="filter-list" onChange={handleSelectedFilter} style={{marginLeft: '10px'}}>
             <option value="">Show all</option>
             <option value="Lithuania">That are smaller than Lithuania by area</option>
             <option value="Oceania">That are in “Oceania” region</option>
           </select>
         </div>
+        <div>Sort list: <button onClick={sortingAsc} style={{backgroundColor: getSorting === 1 ? "rgb(143,255,143)" : ""}}>Asc</button> / <button onClick={sortingDesc} style={{backgroundColor: getSorting === 2 ? "rgb(143,255,143)" : ""}}>Desc</button></div>
       </div>
-      {selectedFilter ? '' : getShowData.map(x => <SingleCountry country={x} key={x.name}/>)}
-      {selectedFilter === 'Oceania' ? getShowData.filter((item) => item.region === selectedFilter).map(x => <SingleCountry country={x} key={x.name}/>) : ''}
-      {selectedFilter === 'Lithuania' ? getShowData.filter((item) => item.area < 65300).map(x => <SingleCountry country={x} key={x.name}/>) : ''}
+      {currentPosts.map(x => <SingleCountry country={x} key={x.name}/>)}
+      <Pagination totalPosts={getShowData.length} postsPerPage={postsPerPage} setCurrentPage={setCurrentPage} currentPage={currentPage}/>
     </div>
   )
 }
